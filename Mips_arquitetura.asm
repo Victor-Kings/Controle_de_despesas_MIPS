@@ -1,7 +1,8 @@
 .data
-	menu: .asciiz "		ESCOLHA UMA DAS OP«’ES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
-	digitar: .asciiz "\n\nDigite a opÁ„o: "
+	menu: .asciiz "		ESCOLHA UMA DAS OP√á√ïES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
+	digitar: .asciiz "\n\nDigite a op√ß√£o: "
 	vetor: .space 400
+	vetor_meses: .space 48
 	contador: .word -4
 	ler: .space 16
 	table: .asciiz "\t"
@@ -11,9 +12,9 @@
 	opcaodecategoria: .asciiz "\nDigite a categoria:  "
 	opcaodevalor: .asciiz "\nDigite o valor da despesa:"
 	opcaodeid: .asciiz "\nDigite um numero para o id:  "
-	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)N√O"
-	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclus„o:  "
-#aosdijaoisdjajdo
+	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)N√ÉO"
+	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclus√£o:  "
+
 .text
 Inicio:
 	#PRINTAR O MENU
@@ -21,7 +22,7 @@ Inicio:
 	la $a0, menu
 	syscall
 
-	#ESCOLHA DA OP«√O
+	#ESCOLHA DA OP√á√ÉO
 	addi $v0, $zero, 4
 	la $a0, digitar
 	syscall
@@ -32,6 +33,7 @@ Inicio:
 	beq $t0, 1, L1
 	beq $t0, 2, L2
 	beq $t0, 3, L3
+	beq $t0, 4, l4
 ################################################################   1 PARTE #########################################################
 L1:
 	#pegar o valor do ultimo na pilha
@@ -49,7 +51,7 @@ L1:
 
 	#salvar no meu vetor
 	addi $s0, $s0, 4
-	sw $s1, vetor($s0) #salva na posiÁ„o 0
+	sw $s1, vetor($s0) #salva na posi√ß√£o 0
 #-----------------------------------------------------------------------------------------------
 	#chamar a string de categoria
 	addi $v0, $zero, 4
@@ -228,13 +230,13 @@ l2_1:
   	addi $s0,$s4,0
 
 print_fim:
-#condiÁ„o para continuar if maior que
+#condi√ß√£o para continuar if maior que
 	lw $t4, contador($0)
 	blt $s4, $t4, l2_1
 	j Inicio
 
-#--\-\\-\-\-\--\\\\--\---\-\-\-\-\-\-\-\-\-\-\-\-\--\-\-\-\-
-#------------------exclus„o----------------------------
+#--\-\\-\-\-\--\\\\--\-PARTE 3--\-\-\-\-\-\-\-\-\-\-\-\-\--\-\-\-\-
+#------------------exclus√£o----------------------------
 
 L3:
 	addi $v0, $zero, 4
@@ -276,9 +278,12 @@ excluir_loop:
 excluir_fim:
 j Inicio
 	
+##################################### PARTE 4 #############################################	
 	
-	
-	
+L4: 
+
+l4_loop:
+		
 	
 	
 	
