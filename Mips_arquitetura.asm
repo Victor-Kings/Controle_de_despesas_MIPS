@@ -14,6 +14,8 @@
 	opcaodeid: .asciiz "\nDigite um numero para o id:  "
 	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)NÃO"
 	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclusão:  "
+	mes_ano: .asciiz "\ndigite o mes e ano: "
+	
 
 .text
 Inicio:
@@ -33,7 +35,7 @@ Inicio:
 	beq $t0, 1, L1
 	beq $t0, 2, L2
 	beq $t0, 3, L3
-	beq $t0, 4, l4
+	beq $t0, 4, L4
 ################################################################   1 PARTE #########################################################
 L1:
 	#pegar o valor do ultimo na pilha
@@ -281,16 +283,51 @@ j Inicio
 ##################################### PARTE 4 #############################################	
 	
 L4: 
+	addi $s1,$zero,0 #zerar vetor para usar mais para frente
+	addi $v0, $zero, 4 #print string
+	la $a0, mes_ano
+	syscall
+	
+	#leitura mes
+	addi $v0,$zero,5
+	syscall
+	addi $t0,$v0,0 #mes em t0
+	#leitura ano
+	addi $v0,$zero,5
+	syscall
+	addi $t1,$v0,0 #mes em t1
+	addi $s0,$zero,28
+	lw $t2,contador($0)
+	addi $t2,$zero,4 #tamanho do vetor em t2
 
 l4_loop:
-		
+	lw $t3,vetor($s0)#tirar mes do vetor
+	addi $s0,$s0,4
+	lw $t4,vetor($s0)#tirar ano do vetor
+	addi $s0,$s0,32
+	addi $t2,$t2,-36
+
+	beq $t0,$t3,And #(if t0==t3 && t1==t4)[]...
+And:#[]...
+	beq $t1,$t4,l4_soma #if true go l4_soma.
 	
+	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
+	j l4_exit #else l4_exit
 	
-	
-	
-	
-	
-	
+l4_soma:
+	addi $s0,$s0,-44
+	lw $t5,vetor($s0)
+	add $s1,$s1,$t5
+
+	beq $t2,0,l4_exit
+	addi $s0,$s0,44
+	j l4_loop
+l4_exit:	
+
+		addi $v0,$zero,1
+		add $a0,$zero,$s1
+		syscall
+ j Inicio
 	
 	
 	
