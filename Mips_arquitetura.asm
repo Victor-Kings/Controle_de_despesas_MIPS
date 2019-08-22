@@ -1,5 +1,5 @@
 .data
-	menu: .asciiz "\n	ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
+	menu: .asciiz "		ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
 	digitar: .asciiz "\n\nDigite a opção: "
 	vetor: .space 400
 	vetor_meses: .space 48
@@ -298,7 +298,7 @@ L4:
 	addi $t1,$v0,0 #mes em t1
 	addi $s0,$zero,28
 	lw $t2,contador($0)
-	addi $t2,$zero,4 #tamanho do vetor em t2
+	addi $t2,$t2,4 #tamanho do vetor em t2
 
 l4_loop:
 	lw $t3,vetor($s0)#tirar mes do vetor
@@ -327,6 +327,7 @@ l4_exit:
 		addi $v0,$zero,1
 		add $a0,$zero,$s1
 		syscall
+		addi $s1,$zero,0
  j Inicio
 	
 	
