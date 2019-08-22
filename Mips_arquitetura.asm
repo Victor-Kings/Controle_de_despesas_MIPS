@@ -241,6 +241,8 @@ print_fim:
 #------------------exclusão----------------------------
 
 L3:
+	lw $s4, contador($0) #add
+	addi $s4, $s4, 4 #add
 	addi $v0, $zero, 4
 	la $a0, opcaodeid
 	syscall
@@ -254,10 +256,13 @@ L3:
 	
 	lw $t0,vetor($s0)
 	beq $a0,$t0,excluir
-	
 	addi $s0,$s0,36
+	addi $s4, $s4, -36 #add
+	ble $s4, 0, sair_fora #add
+	
 	j l3_loop
-
+	
+	
 excluir:
 	
 	lw $t2,contador($0)
@@ -279,6 +284,9 @@ excluir_loop:
 	
 excluir_fim:
 j Inicio
+
+sair_fora:#add
+	j Inicio
 	
 ##################################### PARTE 4 #############################################	
 	
@@ -298,7 +306,7 @@ L4:
 	addi $t1,$v0,0 #mes em t1
 	addi $s0,$zero,28
 	lw $t2,contador($0)
-	addi $t2,$zero,4 #tamanho do vetor em t2
+	addi $t2,$t2,4 #tamanho do vetor em t2
 
 l4_loop:
 	lw $t3,vetor($s0)#tirar mes do vetor
@@ -327,7 +335,6 @@ l4_exit:
 		addi $v0,$zero,1
 		add $a0,$zero,$s1
 		syscall
+		addi $s1,$zero,0
  j Inicio
-	
-	
-	
+
