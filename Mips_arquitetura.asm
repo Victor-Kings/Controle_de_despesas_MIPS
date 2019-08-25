@@ -2,6 +2,9 @@
 	menu: .asciiz "		ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
 	digitar: .asciiz "\n\nDigite a opção: "
 	vetor: .space 400
+	vetor_f4: .space 400
+	vet_L6: .space 400
+	cont_vetf4: .word 0
 	vetor_meses: .space 48
 	contador: .word -4
 	ler: .space 16
@@ -15,7 +18,8 @@
 	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)NÃO"
 	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclusão:  "
 	mes_ano: .asciiz "\ndigite o mes e ano: "
-	
+	string1: .space 16
+	string2: .space 16
 
 .text
 Inicio:
@@ -36,6 +40,7 @@ Inicio:
 	beq $t0, 2, L2
 	beq $t0, 3, L3
 	beq $t0, 4, L4
+	beq $t0, 6, L6
 ################################################################   1 PARTE #########################################################
 L1:
 	#pegar o valor do ultimo na pilha
@@ -66,12 +71,12 @@ L1:
   	li $a1, 16
   	la $a0,vetor($s0)
   	syscall
-	
+
 	la $t8, vetor($s0)
 	li $v0, 4
 	la $a0, ($t8)
 	syscall
-	
+
 #--------------------------------------------------------------------------------------------
 	#chamar a string de valor
 	addi $v0, $zero, 4
@@ -98,7 +103,7 @@ L1:
 	#salvar no meu vetor
 	addi $s0, $s0, 4 #24
 	sw $s1, vetor($s0)
-	
+
 	addi $v0, $zero, 4
 	la $a0, barra
 	syscall
@@ -108,18 +113,18 @@ L1:
 	addi $s1, $v0, 0
 	addi $s0,$s0,4   #28
 	sw $s1, vetor($s0)
-	
+
 	addi $v0, $zero, 4
 	la $a0, barra
 	syscall
-	
+
 	#chamar a leitura do ano
 	addi $v0, $zero, 5
 	syscall
 	addi $s1, $v0, 0
 	addi $s0,$s0,4  #32
 	sw $s1, vetor($s0)
-	
+
 	#------------------------------------------------------------
 	#Jogar o ultimo valor variavel
 	sw $s0, contador($0)
@@ -128,16 +133,16 @@ L1:
 	addi $v0, $zero, 1
 	addi $a0, $a0, 0
 	syscall
-	
+
 	#Fazer a escolha se deseja cadastrar mais
 Escolha_errada:
 	addi $v0, $zero, 4
 	la $a0, continuardigitando
 	syscall
-	#leitura para escolha 
+	#leitura para escolha
 	addi $v0, $zero, 5
 	syscall
-	
+
 	addi $s0, $v0, 0
 	beq $s0, 1, L1
 	beq $s0, 2, Inicio
@@ -145,12 +150,12 @@ Escolha_errada:
 
 #################################################################  2 PARTE  ########################################################
 	#printaaaaa vetor
-	
+
 L2: #printar o vetor
 	lw $t0, contador($0)
 	li $t1,-4
 	beq $t0, $t1, print_fim
-	
+
 	addi $s0, $zero, -4
 l2_1:
   #printa o ID
@@ -166,10 +171,9 @@ l2_1:
   #printa a categoria (STRING)
 	addi $s0, $s0, 4
 	add $s4, $zero, $s0
-  	la $t0,vetor    # aqui
+  la $t0,vetor    # aqui
  	add $s0,$t0,$s0
 	la $t0, 0($s0)
-
 	li $v0, 4
 	la $a0, ($t0)
 	syscall
@@ -199,7 +203,7 @@ l2_1:
 	addi $v0, $zero, 1
 	addi $a0, $t1, 0
 	syscall
-	
+
 	addi $v0, $zero, 4
 	la $a0, barra
 	syscall
@@ -212,7 +216,7 @@ l2_1:
 	addi $v0, $zero, 1
 	addi $a0, $t1, 0
 	syscall
-	
+
 	addi $v0, $zero, 4
 	la $a0, barra
 	syscall
@@ -220,12 +224,12 @@ l2_1:
 #printar ano
 
 	addi $s4, $s4, 4
-  	addi $s0,$s4,0
+  addi $s0,$s4,0
 	lw $t1, vetor($s0)
 	addi $v0, $zero, 1
 	addi $a0, $t1, 0
 	syscall
-	
+
 	addi $v0, $zero, 4
 	la $a0, new_line
 	syscall
@@ -246,95 +250,264 @@ L3:
 	addi $v0, $zero, 4
 	la $a0, opcaodeid
 	syscall
-	
+
 	addi $v0,$zero,5
 	syscall
 	add $a0,$v0,$zero
-	
+
 	addi $s0,$zero,0
 	l3_loop:
-	
+
 	lw $t0,vetor($s0)
 	beq $a0,$t0,excluir
 	addi $s0,$s0,36
 	addi $s4, $s4, -36 #add
 	ble $s4, 0, sair_fora #add
-	
+
 	j l3_loop
-	
-	
+
+
 excluir:
-	
+
 	lw $t2,contador($0)
 	addi $t2,$t2,-32
 	addi $t6,$t2,-4
 	sw $t6,contador($0)
 	addi $t3,$zero,36
-	
+
 excluir_loop:
-	
+
 	lb $t4,vetor($t2)
 	sb $t4,vetor($s0)
-	
+
 	addi $t3,$t3,-1
 	addi $t2,$t2,1
 	addi $s0,$s0,1
 	bgt $t3,0,excluir_loop
 	#qq coisa usar flag
-	
+
 excluir_fim:
 j Inicio
 
 sair_fora:#add
 	j Inicio
-	
-##################################### PARTE 4 #############################################	
-	
-L4: 
+
+##################################### PARTE 4 #############################################
+
+L4:
 	addi $s1,$zero,0 #zerar vetor para usar mais para frente
-	addi $v0, $zero, 4 #print string
-	la $a0, mes_ano
-	syscall
+	addi $s2,$zero,0 #contador do vetor_f4
 	
-	#leitura mes
-	addi $v0,$zero,5
-	syscall
-	addi $t0,$v0,0 #mes em t0
-	#leitura ano
-	addi $v0,$zero,5
-	syscall
-	addi $t1,$v0,0 #mes em t1
+	lw $s2,cont_vetf4($0) #tamanho do vetor_f4 em s2
+	
 	addi $s0,$zero,28
 	lw $t2,contador($0)
-	addi $t2,$t2,4 #tamanho do vetor em t2
+	addi $t2,$t2,4 #tamanho do vetor principal em t2
 
+	lw $t3,vetor($s0)#tirar mes do vetor
+	sw $t3,vetor_f4($s2)#colocarmes no aux
+	addi $s0,$s0,4
+	addi $s2,$s2,4
+	lw $t4,vetor($s0)#tirar ano do vetor
+	sw $t4,vetor_f4($s2)#colocar no aux
+
+	addi $s2,$zero,1
+	sw $s2,cont_vetf4($0)
+	addi $s0,$zero,28
+	addi $s4,$zero,0 # i do vetor auxiliar
 l4_loop:
+
 	lw $t3,vetor($s0)#tirar mes do vetor
 	addi $s0,$s0,4
 	lw $t4,vetor($s0)#tirar ano do vetor
+
+l4_loopinterno:
+	addi $s2,$s2,-1
+	lw $t5,vetor_f4($s4)
+	addi $s4,$s4,4
+	lw $t6,vetor_f4($s4)
+
 	addi $s0,$s0,32
+	
 	addi $t2,$t2,-36
 
-	beq $t0,$t3,And #(if t0==t3 && t1==t4)[]...
+	beq $t5,$t3,And #(if t0==t3 && t1==t4)[]...
 And:#[]...
-	beq $t1,$t4,l4_soma #if true go l4_soma.
+	beq $t6,$t4,l4_soma #if true go l4_soma.
+
+	#lw $t0,vetor_f4($0)
+	addi $s4,$s4,4
+
+	bgt $s2,0,l4_loopinterno
+	#adionar na proxima posição do vet aux
+	sw $t3,vetor_f4($s4)
+	addi $s4,$s4,4
+	sw $t4,vetor_f4($s4)
+	addi $s4,$s4,4
+	addi $s0,$s0,-44 #pegar despesa vetor principal
+	lw $t5,vetor($s0)
+	sw $t5,vetor_f4($s4)
+	lw $s2,cont_vetf4($0)
+	addi $s2,$s2,1
+	sw $s2,cont_vetf4($0) 
 	
 	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
-	j l4_exit #else l4_exit
+
+	#printar vetor aux
+		addi $s0,$zero,0
+		lw $t0,cont_vetf4($0)
+	loop_print:
+		addi $v0,$0,1
+		lw $a0,vetor_f4($s0)
+		syscall
+		addi $s0,$s0,4
+		addi $t0,$t0,-1
+	bne $t0,$0,loop_print
 	
+	j Inicio 
+
 l4_soma:
 	addi $s0,$s0,-44
+	addi $s4,$s4,4
 	lw $t5,vetor($s0)
-	add $s1,$s1,$t5
-
-	beq $t2,0,l4_exit
+	lw $t6,vetor_f4($s4)
+	add $s1,$t6,$t5
+	sw $s1,vetor_f4($s4)
 	addi $s0,$s0,44
-	j l4_loop
-l4_exit:	
+	
+	bgt $t2,$0,l4_loop
+	j Inicio
+	
 
-		addi $v0,$zero,1
-		add $a0,$zero,$s1
+
+###################################função 6########################
+L6:
+	lw $s0,contador($0)
+	addi $s0, $s0, 4 	 #tamanho do vetor principal
+	addi $s1,$zero,4 #contador importante guarda posição do vetor principal
+	addi $s2,$zero,0 #contador para N funções
+	addi $s3,$zero,1 #vetor auxiliar, contador tamanho
+	addi $s4,$zero,0 #contador importante guarda posição do vetor aux
+	addi $s5,$zero,0 #auxiliar para salvar s3
+
+	L6_loop1: #passar do vetor principal pro vetor auxiliar
+	lb $t0,vetor($s1)
+	sb $t0,vet_L6($s2) #passa para o vetor aux
+	addi $s2,$s2,1 #registrador s2 contador para vetor_l6
+	addi $s1,$s1,1 #registrador s1 conmtador parar vetor principal
+	blt $s2,16,L6_loop1
+
+	addi $s2,$zero,0
+	addi $s1,$zero,4
+
+	##-----inicio da função
+l6_loopi: #passar do vetor para varivel aux1 []...
+	lb $t0,vetor($s1)
+	sb $t0,string1($s2)
+	addi $s2,$s2,1
+	addi $s1,$s1,1
+	blt $s2,16, l6_loopi#...[]
+
+	#lw $t1, vetor($s1)
+	#addi $s1,$s1,20
+
+  addi $s2,$zero,0
+	add $s5,$s3,$zero #salvar s3 em s5 pra ter salvo
+
+	L6_loopcomp_aux:
+		addi $s5,$s5,-1
+		l6_loopi_aux: #passar do vetor aux para a varivel aux2 []...
+		lb $t0,vet_L6($s4)
+		sb $t0,string2($s2)
+		addi $s2,$s2,1
+		addi $s4,$s4,1
+		blt $s2,16,l6_loopi_aux #...[]
+
+		jal strcmp
+
+		beq $t5,1,L6_cont#por enquanto t5 so para fazer a função ate acertar o registrador correto quando for feita a STRCMP
+
+		bgt $s5,0,L6_loopcomp_aux
+
+		addi $s2,$zero,0
+		addi $s4,$s4,4
+
+		l6_loop_aux_in_vet: #passar da aux1 para vet aux []...
+			lb $t0,string1($s2)
+			sb $t0,vet_L6($s4)
+			addi $s4,$s4,1
+			addi $s2,$s2,1
+			blt $s2,16,l6_loop_aux_in_vet#...[]
+
+			addi $s3,$s3,1#incrementar no tamanho do vetor aux
+			addi $s0,$s0,-36
+			bgt $s0,0,l6_loopi
+			j Inicio
+
+	L6_cont:
+		#addi $s1,$s1,-20
+		lw $t1, vetor($s1)#pegar dispesas do vet principal
+		lw $t2, vet_L6($s4)#pegar dispesas do aux
+		add $t1,$t1,$t2 # somar as 2
+		sw $t1,vet_L6($s4) #jogar em vetL6
+
+		addi $s1,$s1,20
+		addi $s0,$s0,-36
+		bgt $s0,0,l6_loopi
+
+	 	#bora
+		#printa a categoria (STRING)
+	loop_printar:
+		addi $s0, $s0, 0
+		add $s4, $zero, $s0
+	  la $t0, vet_L6    # aqui
+	 	add $s0,$t0,$s0
+		la $t0, 0($s0)
+		li $v0, 4
+		la $a0, ($t0)
 		syscall
-		addi $s1,$zero,0
- j Inicio
+		addi $s4, $s4, 16
+	  	addi $s0, $s4, 0
+		la $t0, vet_L6
+	  	add $s0,$t0,$s0
+	  	lw $t0, 0($s0)
 
+		li $v0, 1
+		la $a0, ($t0)
+		syscall
+
+		j Inicio
+	#--------------------------------------------
+	#---------Função STRCMP----------------------
+strcmp:
+	add $t6,$zero,$s2
+	add $t4,$zero,$s3
+	la $s2,string1
+	la $s3,string2
+	addi $s2,$s2,1                   # point to next char
+	addi $s3,$s3,1
+
+# string compare loop (just like strcmp)
+cmploop:
+		lb $t2,($s2)                   # get next char from str1
+		lb $t3,($s3)                   # get next char from str2
+		bne $t2,$t3,cmpne               # are they different? if yes, fly
+
+		beq $t2,$zero,cmpeq             # at EOS? yes, fly (strings equal)
+
+		addi $s2,$s2,1                   # point to next char
+		addi $s3,$s3,1                   # point to next char
+		j cmploop
+
+
+cmpne:
+		add $s2,$zero,$t6
+		add $s3,$zero,$t4
+		addi $t5,$zero,0
+		jr $ra
+
+cmpeq:
+		add $s2,$zero,$t6
+		add $s3,$zero,$t4
+		addi $t5,$zero,1
+		jr $ra
