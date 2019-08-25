@@ -327,7 +327,7 @@ l4_loopinterno:
 	addi $s4,$s4,4
 	lw $t6,vetor_f4($s4)
 
-	addi $s0,$s0,32
+#	addi $s0,$s0,32
 	
 	addi $t2,$t2,-36
 
@@ -354,28 +354,33 @@ And:#[]...
 	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
 
 	#printar vetor aux
-		addi $s0,$zero,0
+	print:
+		addi $s0,$zero,8
 		lw $t0,cont_vetf4($0)
 	loop_print:
+	
 		addi $v0,$0,1
 		lw $a0,vetor_f4($s0)
 		syscall
-		addi $s0,$s0,4
+		addi $s0,$s0,12
+
 		addi $t0,$t0,-1
-	bne $t0,$0,loop_print
+	bgt $t0,$0,loop_print
 	
 	j Inicio 
 
 l4_soma:
-	addi $s0,$s0,-44
+	addi $s0,$s0,-12
 	addi $s4,$s4,4
 	lw $t5,vetor($s0)
 	lw $t6,vetor_f4($s4)
 	add $s1,$t6,$t5
 	sw $s1,vetor_f4($s4)
 	addi $s0,$s0,44
-	
+	addi $s4,$0,0
+	#addi $t2,$t2,-36
 	bgt $t2,$0,l4_loop
+	j print
 	j Inicio
 	
 
