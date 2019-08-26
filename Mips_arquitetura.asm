@@ -373,7 +373,7 @@ continua_and:
 
 l4_soma:
 	addi $s0,$s0,-12
-	addi $s4,$s4,4 ta ai? 
+	addi $s4,$s4,4
 	lw $t5,vetor($s0)
 	lw $t6,vetor_f4($s4)
 	add $s1,$t6,$t5
