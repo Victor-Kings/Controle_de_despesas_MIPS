@@ -297,9 +297,9 @@ sair_fora:#add
 L4:
 	addi $s1,$zero,0 #zerar vetor para usar mais para frente
 	addi $s2,$zero,0 #contador do vetor_f4
-	
+
 	#lw $s2,cont_vetf4($0) #tamanho do vetor_f4 em s2
-	
+
 	addi $s0,$zero,28
 	lw $t2,contador($0)
 	addi $t2,$t2,4 #tamanho do vetor principal em t2
@@ -321,26 +321,33 @@ l4_loop:
 	addi $s0,$s0,4
 	lw $t4,vetor($s0)#tirar ano do vetor
 
+	j l4_loopinterno
+
+	correc:
+	addi $s4,$s4,-4
+	addi $t2,$t2,36
+
 l4_loopinterno:
-	addi $s2,$s2,-1 
+	addi $s2,$s2,-1
 	lw $t5,vetor_f4($s4)#t5 mes
 	addi $s4,$s4,4
 	lw $t6,vetor_f4($s4)#t6 ano
 
 #	addi $s0,$s0,32
-	
+
 	addi $t2,$t2,-36
 
 	beq $t5,$t3,And #(if t0==t3 && t1==t4)[]...
 	j continua_and
 	And:#[]...
 		beq $t6,$t4,l4_soma #if true go l4_soma.
-	
+
 continua_and:
 	#lw $t0,vetor_f4($0)
-	addi $s4,$s4,8
 
-	bgt $s2,0,l4_loopinterno
+
+	bgt $s2,0,correc
+	addi $s4,$s4,8
 	#adionar na proxima posição do vet aux
 	sw $t3,vetor_f4($s4)
 	addi $s4,$s4,4
@@ -350,17 +357,21 @@ continua_and:
 	lw $t5,vetor($s0)
 	sw $t5,vetor_f4($s4)
 	lw $s2,cont_vetf4($0)
-	addi $s2,$s2,1
+	addi $s2,$s2,1# continua dando ruim
 	sw $s2,cont_vetf4($0)
-	
+	addi $s4,$s4,-8
+	addi $s0,$s0,44
+
 	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
 
 	#printar vetor aux
+	#testa ai agr 
+	#LIXOOOOOSSSSSSSSSSSSSS
 	print:
 	addi $s0,$zero,8
 	lw $t0,cont_vetf4($0)
 	loop_print:
-	
+
 	addi $v0,$0,1
 	lw $a0,vetor_f4($s0)
 	syscall
@@ -368,9 +379,11 @@ continua_and:
 
 	addi $t0,$t0,-1
 	bgt $t0,$0,loop_print
-	
-	j Inicio 
 
+	addi $s0,$0,0
+	sw $s0,cont_vetf4($0)
+	j Inicio
+	nop funcionalit
 l4_soma:
 	addi $s0,$s0,-12
 	addi $s4,$s4,4
@@ -383,8 +396,9 @@ l4_soma:
 	#addi $t2,$t2,-36
 	bgt $t2,$0,l4_loop
 	j print
+	addi $s0,$0,0
+	sw $s0,cont_vetf4($0)
 	j Inicio
-	
 
 ###################################função 6########################
 L6:
@@ -511,7 +525,8 @@ cmpne:
 	add $s3,$zero,$t4
 	addi $t5,$zero,0
 	jr $ra
-
+# TA COM PAU AINDA
+# MANDEI PRINT NO DISCORD
 cmpeq:
 	add $s2,$zero,$t6
 	add $s3,$zero,$t4
