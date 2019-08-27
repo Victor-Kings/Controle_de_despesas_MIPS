@@ -383,7 +383,7 @@ continua_and:
 	addi $s0,$0,0
 	sw $s0,cont_vetf4($0)
 	j Inicio
-	nop funcionalit
+
 l4_soma:
 	addi $s0,$s0,-12
 	addi $s4,$s4,4
@@ -525,8 +525,7 @@ cmpne:
 	add $s3,$zero,$t4
 	addi $t5,$zero,0
 	jr $ra
-# TA COM PAU AINDA
-# MANDEI PRINT NO DISCORD
+
 cmpeq:
 	add $s2,$zero,$t6
 	add $s3,$zero,$t4
