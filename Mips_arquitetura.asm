@@ -1,10 +1,11 @@
 .data
-	menu: .asciiz "		ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXUIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
-	digitar: .asciiz "\n\nDigite a opção: "
+		string1: .space 16
+	string2: .space 16
 	vetor: .space 400
 	vetor_f4: .space 400
-	vet_L6: .space 400
 	cont_vetf4: .word 0
+	vet_f6: .space 400
+	cont_vetf6: .word 0
 	vetor_meses: .space 48
 	contador: .word -4
 	ler: .space 16
@@ -18,8 +19,9 @@
 	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)NÃO"
 	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclusão:  "
 	mes_ano: .asciiz "\ndigite o mes e ano: "
-	string1: .space 16
-	string2: .space 16
+	menu: .asciiz "		ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
+	digitar: .asciiz "\n\nDigite a opção: "
+
 
 .text
 Inicio:
@@ -298,8 +300,6 @@ L4:
 	addi $s1,$zero,0 #zerar vetor para usar mais para frente
 	addi $s2,$zero,0 #contador do vetor_f4
 
-	#lw $s2,cont_vetf4($0) #tamanho do vetor_f4 em s2
-
 	addi $s0,$zero,28
 	lw $t2,contador($0)
 	addi $t2,$t2,4 #tamanho do vetor principal em t2
@@ -332,9 +332,6 @@ l4_loopinterno:
 	lw $t5,vetor_f4($s4)#t5 mes
 	addi $s4,$s4,4
 	lw $t6,vetor_f4($s4)#t6 ano
-
-#	addi $s0,$s0,32
-
 	addi $t2,$t2,-36
 
 	beq $t5,$t3,And #(if t0==t3 && t1==t4)[]...
@@ -343,8 +340,6 @@ l4_loopinterno:
 		beq $t6,$t4,l4_soma #if true go l4_soma.
 
 continua_and:
-	#lw $t0,vetor_f4($0)
-
 
 	bgt $s2,0,correc
 	addi $s4,$s4,8
@@ -365,8 +360,6 @@ continua_and:
 	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
 
 	#printar vetor aux
-	#testa ai agr 
-	#LIXOOOOOSSSSSSSSSSSSSS
 	print:
 	addi $s0,$zero,8
 	lw $t0,cont_vetf4($0)
@@ -407,15 +400,18 @@ L6:
 	addi $s1,$zero,4 #contador importante guarda posição do vetor principal
 	addi $s2,$zero,0 #contador para N funções
 	addi $s3,$zero,1 #vetor auxiliar, contador tamanho
+	sw $s3,cont_vetf6($0)
 	addi $s4,$zero,0 #contador importante guarda posição do vetor aux
 	addi $s5,$zero,0 #auxiliar para salvar s3
 
-	L6_loop1: #passar do vetor principal pro vetor auxiliar
+	loop_trasnf1: #passar do vetor principal pro vetor auxiliar
 	lb $t0,vetor($s1)
-	sb $t0,vet_L6($s2) #passa para o vetor aux
-	addi $s2,$s2,1 #registrador s2 contador para vetor_l6
+	sb $t0,vet_f6($s2) #passa para o vetor aux
+	addi $s2,$s2,1 
 	addi $s1,$s1,1 #registrador s1 conmtador parar vetor principal
-	blt $s2,16,L6_loop1
+	blt $s2,16,loop_trasnf1
+
+	
 
 	addi $s2,$zero,0
 	addi $s1,$zero,4
@@ -428,73 +424,91 @@ l6_loopi: #passar do vetor para varivel aux1 []...
 	addi $s1,$s1,1
 	blt $s2,16, l6_loopi#...[]
 
-	#lw $t1, vetor($s1)
-	#addi $s1,$s1,20
-
   addi $s2,$zero,0
-	add $s5,$s3,$zero #salvar s3 em s5 pra ter salvo
 
+j L6_loopcomp_aux
+correc_f6:
+	addi $s4,$s4,-16
+	addi $s2,$0,0
+	addi $s0,$s0,36
+	
 L6_loopcomp_aux:
-	addi $s5,$s5,-1
+	addi $s3,$s3,-1
 	l6_loopi_aux: #passar do vetor aux para a varivel aux2 []...
-	lb $t0,vet_L6($s4)
+	lb $t0,vet_f6($s4)
 	sb $t0,string2($s2)
 	addi $s2,$s2,1
 	addi $s4,$s4,1
 	blt $s2,16,l6_loopi_aux #...[]
+	addi $s2,$zero,0
+	addi $s0,$s0,-36
 
 	jal strcmp
 
-	beq $t5,1,L6_cont#por enquanto t5 so para fazer a função ate acertar o registrador correto quando for feita a STRCMP
+	beq $t5,1,L6_cont
 
-	bgt $s5,0,L6_loopcomp_aux
+	bgt $s3,0,correc_f6
 
-	addi $s2,$zero,0
+	
 	addi $s4,$s4,4
 
 l6_loop_aux_in_vet: #passar da aux1 para vet aux []...
 	lb $t0,string1($s2)
-	sb $t0,vet_L6($s4)
+	sb $t0,vet_f6($s4)
 	addi $s4,$s4,1
 	addi $s2,$s2,1
 	blt $s2,16,l6_loop_aux_in_vet#...[]
+	addi $s2,$zero,0
+	lw $t0,vetor($s1)
+	sw $t0,vet_f6($s4)
 
+	lw $s3,cont_vetf6($0)
 	addi $s3,$s3,1#incrementar no tamanho do vetor aux
-	addi $s0,$s0,-36
+	sw $s3,cont_vetf6($0)
+
+	addi $s4,$s4,-16
+	addi $s1,$s1,20
+
 	bgt $s0,0,l6_loopi
+	j printar_f6
 	j Inicio
 
 L6_cont:
-		#addi $s1,$s1,-20
-	lw $t1, vetor($s1)#pegar dispesas do vet principal
-	lw $t2, vet_L6($s4)#pegar dispesas do aux
-	add $t1,$t1,$t2 # somar as 2
-	sw $t1,vet_L6($s4) #jogar em vetL6
 
+	lw $t1, vetor($s1)#pegar dispesas do vet principal
+	lw $t2, vet_f6($s4)#pegar dispesas do aux
+	add $t1,$t1,$t2 # somar as 2
+	sw $t1,vet_f6($s4) #jogar em vetL6
+
+	addi $s4,$s4,-16
 	addi $s1,$s1,20
-	addi $s0,$s0,-36
+	addi $s2,$0,0
 	bgt $s0,0,l6_loopi
 
 	 	#bora
 		#printa a categoria (STRING)
-loop_printar:
-	addi $s0, $s0, 0
-	add $s4, $zero, $s0
-  la $t0, vet_L6    # aqui
- 	add $s0,$t0,$s0
+printar_f6:
+	addi $s0, $0, 0
+	lw $t1,cont_vetf6($0)
+#	addi $t1,$t1,2
+	la $t0,vet_f6    # aqui
+	loop_printar_f6:
+	add $s4, $0, $s0
+	add $s0,$t0,$s0
 	la $t0, 0($s0)
 	li $v0, 4
 	la $a0, ($t0)
-	syscall
+	syscall 
+	
 	addi $s4, $s4, 16
-  addi $s0, $s4, 0
-	la $t0, vet_L6
-  add $s0,$t0,$s0
-  lw $t0, 0($s0)
-
+	
 	li $v0, 1
-	la $a0, ($t0)
+	lw $a0, vet_f6($s4)
 	syscall
+	addi $s4,$s4,4
+	add $s0,$0,$s4
+	addi $t1,$t1,-1
+	bgt $t1,0,loop_printar_f6
 
 	j Inicio
 	#--------------------------------------------
@@ -504,8 +518,6 @@ strcmp:
 	add $t4,$zero,$s3
 	la $s2,string1
 	la $s3,string2
-	addi $s2,$s2,1                   # point to next char
-	addi $s3,$s3,1
 
 # string compare loop (just like strcmp)
 cmploop:
