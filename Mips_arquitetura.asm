@@ -324,7 +324,7 @@ l4_loop:
 	j l4_loopinterno
 
 	correc:
-	addi $s4,$s4,-4
+	addi $s4,$s4,8
 	addi $t2,$t2,36
 
 l4_loopinterno:
@@ -354,7 +354,7 @@ continua_and:
 	lw $s2,cont_vetf4($0)
 	addi $s2,$s2,1# continua dando ruim
 	sw $s2,cont_vetf4($0)
-	addi $s4,$s4,-8
+	addi $s4,$0,0
 	addi $s0,$s0,44
 
 	bgt $t2,$0,l4_loop	 #if tamanho do vetor > 0
@@ -385,7 +385,8 @@ l4_soma:
 	add $s1,$t6,$t5
 	sw $s1,vetor_f4($s4)
 	addi $s0,$s0,44
-	addi $s4,$s4,-8
+	addi $s4,$0,0
+	lw $s2,cont_vetf4($0)
 	#addi $t2,$t2,-36
 	bgt $t2,$0,l4_loop
 	j print
@@ -412,7 +413,6 @@ L6:
 	blt $s2,16,loop_trasnf1
 
 	
-
 	addi $s2,$zero,0
 	addi $s1,$zero,4
 
@@ -428,7 +428,8 @@ l6_loopi: #passar do vetor para varivel aux1 []...
 
 j L6_loopcomp_aux
 correc_f6:
-	addi $s4,$s4,-16
+	addi $s4,$s4,4
+	
 	addi $s2,$0,0
 	addi $s0,$s0,36
 	
@@ -466,7 +467,7 @@ l6_loop_aux_in_vet: #passar da aux1 para vet aux []...
 	addi $s3,$s3,1#incrementar no tamanho do vetor aux
 	sw $s3,cont_vetf6($0)
 
-	addi $s4,$s4,-16
+	addi $s4,$0,0
 	addi $s1,$s1,20
 
 	bgt $s0,0,l6_loopi
@@ -479,8 +480,8 @@ L6_cont:
 	lw $t2, vet_f6($s4)#pegar dispesas do aux
 	add $t1,$t1,$t2 # somar as 2
 	sw $t1,vet_f6($s4) #jogar em vetL6
-
-	addi $s4,$s4,-16
+	lw $s3,cont_vetf6($0)
+	addi $s4,$0,0
 	addi $s1,$s1,20
 	addi $s2,$0,0
 	bgt $s0,0,l6_loopi
