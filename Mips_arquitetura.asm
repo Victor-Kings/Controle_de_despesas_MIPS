@@ -452,7 +452,7 @@ L6_loopcomp_aux:
 
 	
 	addi $s4,$s4,4
-
+addi $s2,$zero,0
 l6_loop_aux_in_vet: #passar da aux1 para vet aux []...
 	lb $t0,string1($s2)
 	sb $t0,vet_f6($s4)
@@ -490,15 +490,16 @@ L6_cont:
 		#printa a categoria (STRING)
 printar_f6:
 	addi $s0, $0, 0
+	
 	lw $t1,cont_vetf6($0)
 #	addi $t1,$t1,2
 	la $t0,vet_f6    # aqui
 	loop_printar_f6:
 	add $s4, $0, $s0
 	add $s0,$t0,$s0
-	la $t0, 0($s0)
+	la $t3, 0($s0)
 	li $v0, 4
-	la $a0, ($t0)
+	la $a0, ($t3)
 	syscall 
 	
 	addi $s4, $s4, 16
