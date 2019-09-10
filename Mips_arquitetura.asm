@@ -127,10 +127,10 @@ L1:
 	#Jogar o ultimo valor variavel
 	sw $s0, contador($0)
 	#adicionei para testes printar o contador
-	lw $a0, contador($0)
-	addi $v0, $zero, 1
-	addi $a0, $a0, 0
-	syscall
+	#lw $a0, contador($0)
+	#addi $v0, $zero, 1
+	#addi $a0, $a0, 0
+	#syscall
 
 	#Fazer a escolha se deseja cadastrar mais
 Escolha_errada:
