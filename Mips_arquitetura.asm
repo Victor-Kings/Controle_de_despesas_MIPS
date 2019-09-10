@@ -378,7 +378,7 @@ continua_and:
 	addi $v0, $zero, 4
 	la $a0, table
 	syscall
-	
+
 	addi $v0,$0,1
 	lw $a0,vetor_f4($s0)
 	syscall
@@ -386,7 +386,7 @@ continua_and:
 	addi $v0, $zero, 4
 	la $a0, new_line
 	syscall
-	
+
 	addi $s0,$s0,12
 
 	addi $t0,$t0,-1
@@ -761,7 +761,10 @@ jr $ra
 
 			  lb $s2, vet_f6($s0) #essa parte aqui é o if
 			  lb $s3, vet_f6($s1)
+				
+				blt $s2, $s3, cont_2
 				bgt $s2, $s3, troca#ate aqui
+				
 				addi $s0, $s0, 1
 				addi $s1, $s1, 1
 				addi $t5, $t5, 1
@@ -778,7 +781,7 @@ jr $ra
 							lb $s6, vet_f6($s0)
 							lb $s7, vet_f6($s1)
 							sb $s7, vet_f6($s0)
-							sb $s6, vet_f6($s1) 
+							sb $s6, vet_f6($s1)
 							addi $s0, $s0, 1
 							addi $s1, $s1, 1
 							addi $t6, $t6, 1
@@ -788,7 +791,13 @@ jr $ra
 						lw $s7, vet_f6($s1)
 			      sw $s7, vet_f6($s0)
 			      sw $s6, vet_f6($s1)
-
+						j cont
+						cont_2:
+						sub $s0, $s0, $t5
+						sub $s1, $s1, $t5
+						addi $s0, $s0, 16
+						addi $s1, $s1, 16
+						
 			      cont:
 			      addi $s0, $s0, 4
 			      addi $s1, $s1, 4
@@ -802,6 +811,7 @@ jr $ra
 			  addi $s5, $s5, 1
 			  blt $s5, $t8, for1
 				jr $ra
+				
 #--------------------------BUBBLE 6 --------------------------
 bubble_da_fun6:
 
