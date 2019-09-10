@@ -9,14 +9,17 @@
 	vetor_meses: .space 48
 	contador: .word -4
 	ler: .space 16
+	contid: .word 0
 	table: .asciiz "\t"
 	new_line: .asciiz "\n"
-	opcaodedia: .asciiz "Dia/mes/ano:  "
+	dia: .asciiz "Dia:  "
+	mes: .asciiz "mes:  "
+	ano: .asciiz "ano:  "
 	barra: .asciiz "/"
 	opcaodecategoria: .asciiz "\nDigite a categoria:  "
 	opcaodevalor: .asciiz "\nDigite o valor da despesa:"
 	opcaodeid: .asciiz "\nDigite um numero para o id:  "
-	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)NÃO"
+	continuardigitando: .asciiz "\nDeseja continuar cadastrando?  (1) SIM  (2)NÃO:\t"
 	opcaodeidexclusao: .asciiz "\nDigite um numero para o id exclusão:  "
 	mes_ano: .asciiz "\ndigite o mes e ano: "
 	menu: .asciiz "		ESCOLHA UMA DAS OPÇÕES ABAIXO\n1- REGISTRAR DESPESAS PESSOAIS\n2- LISTAR DESPESAS\n3- EXCLUIR DESPESAS\n4- EXIBIR GASTOS MENSAIS\n5- EXIBIR GASTOS POR CATEGORIA\n6- EXIBIR RANKING DE DESPESAS"
@@ -50,17 +53,9 @@ L1:
 	#pegar o valor do ultimo na pilha
 	lw $s0, contador($0)
 
-	#chamar a string de ID
-	addi $v0, $zero, 4
-	la $a0, opcaodeid
-	syscall
-	#chamar a leitura da data
-	addi $v0, $zero, 5
-	syscall
-	#salva a leitura em um registrador temporario S1
-	addi $s1, $v0, 0
-
-	#salvar no meu vetor
+	lw $s1,contid($0)
+	addi $s1,$s1,1
+	sw $s1,contid($0)
 	addi $s0, $s0, 4
 	sw $s1, vetor($s0) #salva na posição 0
 #-----------------------------------------------------------------------------------------------
@@ -91,7 +86,7 @@ L1:
 #--------------------------------------------------------------------------------------------
 	#chamar a string de data
 	addi $v0, $zero, 4
-	la $a0, opcaodedia
+	la $a0,dia
 	syscall
 	#chamar a leitura do dia
 	addi $v0, $zero, 5
@@ -103,8 +98,9 @@ L1:
 	sw $s1, vetor($s0)
 
 	addi $v0, $zero, 4
-	la $a0, barra
+	la $a0,mes
 	syscall
+
 	#chamar a leitura do mes
 	addi $v0, $zero, 5
 	syscall
@@ -113,7 +109,7 @@ L1:
 	sw $s1, vetor($s0)
 
 	addi $v0, $zero, 4
-	la $a0, barra
+	la $a0, ano
 	syscall
 
 	#chamar a leitura do ano
@@ -761,10 +757,10 @@ jr $ra
 
 			  lb $s2, vet_f6($s0) #essa parte aqui é o if
 			  lb $s3, vet_f6($s1)
-				
+
 				blt $s2, $s3, cont_2
 				bgt $s2, $s3, troca#ate aqui
-				
+
 				addi $s0, $s0, 1
 				addi $s1, $s1, 1
 				addi $t5, $t5, 1
@@ -797,7 +793,7 @@ jr $ra
 						sub $s1, $s1, $t5
 						addi $s0, $s0, 16
 						addi $s1, $s1, 16
-						
+
 			      cont:
 			      addi $s0, $s0, 4
 			      addi $s1, $s1, 4
@@ -811,7 +807,7 @@ jr $ra
 			  addi $s5, $s5, 1
 			  blt $s5, $t8, for1
 				jr $ra
-				
+
 #--------------------------BUBBLE 6 --------------------------
 bubble_da_fun6:
 
